@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
+        /* CSS (Same as your last "perfect" version with call UI) */
         :root { 
             --bg-color: #f0f2f5; --text-color: #111b21; --primary-color: #00a884; 
             --secondary-color: #ffffff; --input-border-color: #ddd; 
@@ -16,7 +17,6 @@
             --secondary-color: #1f2c33; --input-border-color: #374045; 
             --message-sent-bg-color: #054740; --icon-color: #aebac1; 
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
         
@@ -31,24 +31,16 @@
         body.dark-theme .message.system { color: #aaa; }
 
         .chat-header { background: var(--primary-color); padding: 10px 15px; color: white; border-radius: 15px; margin-bottom: 15px; text-align: center; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
-        .action-btn { /* Home page buttons - 3D look */
-            width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #007a50; /* Darker border for depth */
-            border-bottom: 4px solid #006341; /* Thicker bottom border for 3D effect */
-            border-radius: 15px; 
+        .action-btn { 
+            width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #007a50; 
+            border-bottom: 4px solid #006341; border-radius: 15px; 
             background: linear-gradient(145deg, var(--primary-color), #008f72); 
             color: white; cursor: pointer; 
             font-size: 1.1rem; font-weight: bold; text-shadow: 0 1px 1px rgba(0,0,0,0.2);
             transition: transform 0.1s, box-shadow 0.1s;
         }
-        .action-btn:active {
-            transform: translateY(2px); /* Push button down on click */
-            border-bottom-width: 2px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        body.dark-theme .action-btn { 
-            background: linear-gradient(145deg, var(--primary-color), #00634e); /* Dark theme gradient */
-            border-color: #005c4b; border-bottom-color: #004b39;
-        }
+        .action-btn:active { transform: translateY(2px); border-bottom-width: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        body.dark-theme .action-btn { background: linear-gradient(145deg, var(--primary-color), #00634e); border-color: #005c4b; border-bottom-color: #004b39; }
         
         .app-title { color: var(--primary-color); margin: 2rem 0; font-size: 2.5rem; }
         body.dark-theme .app-title { color: var(--text-color); }
@@ -66,9 +58,9 @@
         #send-chat-btn:hover { opacity: 0.9; }
 
         .icon-btn { background: none; border: none; color: var(--icon-color); cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .chat-header-actions .icon-btn { color: white; font-size: 1.8rem; /* Increased size for header call icons */ }
+        .chat-header-actions .icon-btn { color: white; font-size: 1.8rem; }
         body.dark-theme .chat-header-actions .icon-btn { color: var(--text-color); }
-        
+
         .container { max-width: 600px; margin: 0 auto; min-height: 100vh; padding: 20px; position: relative; }
         #home-page { display: flex; flex-direction: column; align-items: center; text-align: center; }
         .input-container { position: relative; width: 100%; margin: 10px 0; }
@@ -79,66 +71,19 @@
         .error-msg { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4444; color: white; padding: 12px 20px; border-radius: 25px; display: none; z-index: 2000; box-shadow: 0 3px 10px rgba(0,0,0,0.2); font-size: 0.9rem; text-align: center; }
         
         /* Video Call Styles */
-        #video-call-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000000; /* Solid black background */
-            display: none; 
-            flex-direction: column; align-items: center; justify-content: space-between; /* Space for header and controls */
-            z-index: 1005; padding: 0; /* No padding for full screen feel */
-        }
-        #call-ui-header {
-            width: 100%;
-            padding: 10px 15px;
-            background-color: rgba(0,0,0,0.3); /* Semi-transparent header */
-            color: white;
-            display: flex;
-            justify-content: center; /* Center header content */
-            align-items: center;
-            text-align: center;
-            position: absolute; /* Position it over video */
-            top: 0;
-            left: 0;
-            z-index: 1007;
-        }
-        #call-ui-header h2 { font-size: 1.1rem; margin: 0; }
-        #call-ui-header span { font-size: 0.8rem; opacity: 0.8; display: block; }
-
-        .video-wrapper { 
-            position: absolute; /* Take full space of parent */
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-        }
-        #remote-video { width: 100%; height: 100%; object-fit: contain; /* Changed to contain to see full video */ background-color: #000; }
-        #local-video { position: absolute; bottom: 70px; /* Above controls */ right: 15px; width: 25%; max-width: 120px; height: auto; aspect-ratio: 3 / 4; border: 1px solid rgba(255,255,255,0.5); z-index: 1006; display: none; border-radius: 4px; background-color: #111;}
-        
-        #call-controls { 
-            display: flex; gap: 20px; /* Increased gap */
-            padding: 15px;
-            position: absolute; /* Position it over video */
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            justify-content: center;
-            z-index: 1007;
-            background-color: rgba(0,0,0,0.3); /* Semi-transparent background for controls */
-        }
-        #call-controls button { 
-            background-color: rgba(255,255,255,0.2); /* Translucent white */
-            color: white; 
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 50%; width: 60px; height: 60px; /* Larger buttons */
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; /* Larger icons */
-        }
+        #video-call-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; display: none; flex-direction: column; align-items: center; justify-content: space-between; z-index: 1005; padding: 0; }
+        #call-ui-header { width: 100%; padding: 10px 15px; background-color: rgba(0,0,0,0.3); color: white; display: flex; justify-content: center; align-items: center; text-align: center; position: absolute; top: 0; left: 0; z-index: 1007; }
+        #call-ui-header h2 { font-size: 1.1rem; margin: 0; } #call-ui-header span { font-size: 0.8rem; opacity: 0.8; display: block; }
+        .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        #remote-video { width: 100%; height: 100%; object-fit: contain; background-color: #000; }
+        #local-video { position: absolute; bottom: 70px; right: 15px; width: 25%; max-width: 120px; height: auto; aspect-ratio: 3 / 4; border: 1px solid rgba(255,255,255,0.5); z-index: 1006; display: none; border-radius: 4px; background-color: #111;}
+        #call-controls { display: flex; gap: 20px; padding: 15px; position: absolute; bottom: 0; left: 0; width: 100%; justify-content: center; z-index: 1007; background-color: rgba(0,0,0,0.3); }
+        #call-controls button { background-color: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; width: 60px; height: 60px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
         #call-controls button:hover { background-color: rgba(255,255,255,0.3); }
-        #call-controls button.active { background-color: var(--primary-color); /* Green when active, e.g. mic on */ }
-        #call-controls button.muted, #call-controls button.video-off {
-            background-color: rgba(100,100,100,0.5); /* Greyish when muted/off */
-        }
-        #call-controls button.hang-up { background-color: #E53935; /* Brighter red */ }
+        #call-controls button.active { background-color: var(--primary-color); }
+        #call-controls button.muted, #call-controls button.video-off { background-color: rgba(100,100,100,0.5); }
+        #call-controls button.hang-up { background-color: #E53935; }
         #call-controls button.hang-up:hover { background-color: #C62828; }
-
-
         .incoming-call-prompt { background: var(--secondary-color); color: var(--text-color); padding: 15px; border-radius: 10px; margin: 10px auto; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; max-width: 90%; }
         body.dark-theme .incoming-call-prompt { background: var(--dark-secondary); color: var(--dark-text); }
         .incoming-call-prompt p { margin-bottom: 10px; }
@@ -147,10 +92,11 @@
         .incoming-call-prompt .reject-call { background-color: #ccc; color: #333; }
         body.dark-theme .incoming-call-prompt .accept-call { background-color: var(--primary-color); }
         body.dark-theme .incoming-call-prompt .reject-call { background-color: #555; color: var(--text-color); }
+
     </style>
 </head>
-<body class="light-theme">
-    <!-- Theme Toggle Button Removed -->
+<body class="light-theme"> 
+    <!-- Theme toggle button removed from HTML -->
     <div class="error-msg">⚠️ Error Message Placeholder</div>
 
     <div id="home-page" class="container">
@@ -160,6 +106,7 @@
             <input type="text" id="peer-id" placeholder="Your ID / Friend's ID 🔑" class="input-box">
             <button id="copy-id-btn" title="Copy ID">📋</button>
         </div>
+        <!-- IMPORTANT: Ensure onclick attributes call functions available in global scope -->
         <button class="action-btn" onclick="createNewChat()">🆔 Create My ID</button>
         <button class="action-btn" onclick="startChat()">🚀 Connect to Friend</button>
     </div>
@@ -167,9 +114,7 @@
     <div id="chat-page" class="container">
         <div class="chat-header">
             <div class="chat-header-info">
-                <h2 id="chat-with-name-header"> <!-- Changed ID for clarity -->
-                    <span id="contact-name">Friend</span>
-                </h2>
+                <h2 id="chat-with-name-header"><span id="contact-name">Friend</span></h2>
                 <div id="connection-status">🔒 P2P Encrypted</div>
             </div>
             <div class="chat-header-actions">
@@ -186,10 +131,7 @@
 
     <div id="video-call-container">
         <div id="call-ui-header">
-            <div>
-                <h2 id="call-contact-name">Calling Friend...</h2>
-                <span id="call-status">Connecting...</span>
-            </div>
+            <div><h2 id="call-contact-name">Calling Friend...</h2><span id="call-status">Connecting...</span></div>
         </div>
         <div class="video-wrapper">
             <video id="remote-video" autoplay playsinline></video>
@@ -198,7 +140,7 @@
         <div id="call-controls">
             <button id="toggle-mic-btn" class="icon-btn" title="Mute Mic">🎤</button>
             <button id="toggle-video-btn" class="icon-btn" title="Turn Video Off">📹</button>
-            <button id="toggle-speaker-btn" class="icon-btn" title="Earpiece">🔈</button> <!-- Start with earpiece icon -->
+            <button id="toggle-speaker-btn" class="icon-btn" title="Earpiece">🔈</button>
             <button id="hang-up-btn" class="icon-btn hang-up" title="Hang Up">📞</button>
         </div>
     </div>
@@ -206,21 +148,23 @@
     <script>
         // ----- Global Variables ----- 
         let peer; let conn; let myPeerId = null; let connectToFriendIdAfterInitialize = null; 
-        let localStream = null; 
-        let currentCall = null; 
-        let incomingCallInstance = null;
-        let isSpeakerphoneOn = false;
-        let isMicMuted = false;
-        let isVideoOff = false;
+        let localStream = null; let currentCall = null; let incomingCallInstance = null;
+        let isSpeakerphoneOn = false; let isMicMuted = false; let isVideoOff = false;
 
-
-        // ----- DOM Elements ----- 
-        // const themeToggle = document.getElementById('theme-toggle'); // Removed
-        const errorMsgEl = document.querySelector('.error-msg'); const copyIdBtn = document.getElementById('copy-id-btn'); const peerIdInput = document.getElementById('peer-id'); const friendNameInput = document.getElementById('friend-name'); const contactNameSpan = document.getElementById('contact-name'); const messagesDiv = document.getElementById('messages'); const messageInput = document.getElementById('message-input'); const homePageEl = document.getElementById('home-page'); const chatPageEl = document.getElementById('chat-page'); 
+        // ----- DOM Elements (Ensure all are captured correctly) ----- 
+        const errorMsgEl = document.querySelector('.error-msg'); 
+        const copyIdBtn = document.getElementById('copy-id-btn'); 
+        const peerIdInput = document.getElementById('peer-id'); 
+        const friendNameInput = document.getElementById('friend-name'); 
+        const contactNameSpan = document.getElementById('contact-name'); 
+        const messagesDiv = document.getElementById('messages'); 
+        const messageInput = document.getElementById('message-input'); 
+        const homePageEl = document.getElementById('home-page'); 
+        const chatPageEl = document.getElementById('chat-page'); 
         const audioCallBtn = document.getElementById('audio-call-btn'); 
         const videoCallBtn = document.getElementById('video-call-btn'); 
         const sendChatBtn = document.getElementById('send-chat-btn');
-        const connectionStatusEl = document.getElementById('connection-status'); // In chat header
+        const connectionStatusEl = document.getElementById('connection-status');
         const videoCallContainer = document.getElementById('video-call-container');
         const localVideoEl = document.getElementById('local-video');
         const remoteVideoEl = document.getElementById('remote-video');
@@ -228,76 +172,132 @@
         const toggleVideoBtn = document.getElementById('toggle-video-btn');
         const toggleSpeakerBtn = document.getElementById('toggle-speaker-btn');
         const hangUpBtn = document.getElementById('hang-up-btn');
-        const chatWithNameHeader = document.getElementById('chat-with-name-header'); // Chat page header name
-        const callContactNameEl = document.getElementById('call-contact-name'); // Call UI header name
-        const callStatusEl = document.getElementById('call-status'); // Call UI status
+        const chatWithNameHeader = document.getElementById('chat-with-name-header'); 
+        const callContactNameEl = document.getElementById('call-contact-name'); 
+        const callStatusEl = document.getElementById('call-status'); 
 
         // ----- Event Listeners Setup ----- 
         function setupEventListeners() {
-            // themeToggle listener removed
-            copyIdBtn.addEventListener('click', () => { /* ... */ });
-            messageInput.addEventListener('keypress', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } });
-            sendChatBtn.addEventListener('click', sendMessage);
-            audioCallBtn.addEventListener('click', () => startCallAttempt('audio'));
-            videoCallBtn.addEventListener('click', () => startCallAttempt('video'));
-            hangUpBtn.addEventListener('click', endCall);
-            toggleMicBtn.addEventListener('click', toggleMicrophone);
-            toggleVideoBtn.addEventListener('click', toggleCamera);
-            toggleSpeakerBtn.addEventListener('click', toggleSpeaker);
+            console.log("SETUP_LISTENERS: Attaching event listeners...");
+            // Theme toggle removed
+            if (copyIdBtn) copyIdBtn.addEventListener('click', () => { if (peerIdInput.value) { navigator.clipboard.writeText(peerIdInput.value).then(() => showError('✅ ID Copied!')).catch(err => { console.error('Copy failed: ', err); showError('❌ Copy failed.'); }); } else { showError('🤔 No ID to copy.'); }});
+            else console.error("SETUP_LISTENERS_ERROR: copyIdBtn not found");
+
+            if (messageInput) messageInput.addEventListener('keypress', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } });
+            else console.error("SETUP_LISTENERS_ERROR: messageInput not found");
+            
+            if (sendChatBtn) sendChatBtn.addEventListener('click', sendMessage);
+            else console.error("SETUP_LISTENERS_ERROR: sendChatBtn not found");
+
+            if (audioCallBtn) audioCallBtn.addEventListener('click', () => startCallAttempt('audio'));
+            else console.error("SETUP_LISTENERS_ERROR: audioCallBtn not found");
+
+            if (videoCallBtn) videoCallBtn.addEventListener('click', () => startCallAttempt('video'));
+            else console.error("SETUP_LISTENERS_ERROR: videoCallBtn not found");
+
+            if (hangUpBtn) hangUpBtn.addEventListener('click', endCall);
+            else console.error("SETUP_LISTENERS_ERROR: hangUpBtn not found");
+            
+            if (toggleMicBtn) toggleMicBtn.addEventListener('click', toggleMicrophone);
+            else console.error("SETUP_LISTENERS_ERROR: toggleMicBtn not found");
+
+            if (toggleVideoBtn) toggleVideoBtn.addEventListener('click', toggleCamera);
+            else console.error("SETUP_LISTENERS_ERROR: toggleVideoBtn not found");
+
+            if (toggleSpeakerBtn) toggleSpeakerBtn.addEventListener('click', toggleSpeaker);
+            else console.error("SETUP_LISTENERS_ERROR: toggleSpeakerBtn not found");
+            
+            console.log("SETUP_LISTENERS: Event listeners attachment attempt complete.");
         }
 
-        // ----- Theme Logic (Simplified: apply only if class exists) ----- 
+        // ----- Theme Logic (Simplified) ----- 
         function applySavedTheme() { 
+            // If a dark theme is preferred by default or saved, apply it.
+            // For now, it respects the class on body if manually set or via future JS.
             if (document.body.classList.contains('dark-theme')) {
-                // Potentially set a toggle icon if it existed
+                console.log("THEME: Dark theme applied/kept based on body class.");
             } else {
-                // Potentially set a toggle icon if it existed
+                 console.log("THEME: Light theme applied/kept based on body class.");
             }
         }
-        // To enable dark theme by default for testing, add class to body:
-        // document.body.classList.add('dark-theme'); 
 
         // ----- UI Helper Functions ----- 
-        function showError(text, duration = 4000) { /* ... */ }
+        function showError(text, duration = 4000) { console.log(`SHOW_ERROR: ${text}`); if(errorMsgEl) { errorMsgEl.textContent = text; errorMsgEl.style.display = 'block'; setTimeout(() => { errorMsgEl.style.display = 'none'; }, duration); } else { console.error("SHOW_ERROR_FAIL: errorMsgEl not found."); alert(text); /* Fallback to alert */ }}
         
-        // ----- Core PeerJS Logic ----- 
-        function initializePeer() { /* ... (same) ... */ }
-        function createNewChat() { /* ... (same) ... */ }
-        function startChat() { /* ... (same) ... */ }
-        function attemptActualConnection(targetPeerId) { /* ... (same, serialization: 'binary') ... */ }
+        // ----- Core PeerJS Functions (MUST be in global scope for HTML onclick)----- 
+        // Moved createNewChat and startChat to global scope by ensuring they are not nested if they were.
+
+        function initializePeer() { 
+            console.log("PEER_INIT: Initializing Peer..."); 
+            if (peer) { console.log("PEER_INIT: Destroying existing peer instance."); peer.destroy(); } 
+            peer = new Peer(undefined, { host: '0.peerjs.com', port: 443, secure: true, debug: 1, config: {iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]} });  
+            peer.on('open', id => { console.log('PEER_OPEN: My peer ID is: ' + id); myPeerId = id; if(peerIdInput) peerIdInput.value = id; if(copyIdBtn) copyIdBtn.style.display = 'inline-block'; if (connectToFriendIdAfterInitialize) { showError(`✅ Client ready (ID: ${myPeerId}). Connecting to ${connectToFriendIdAfterInitialize}...`); attemptActualConnection(connectToFriendIdAfterInitialize); connectToFriendIdAfterInitialize = null; } else { showError(`🎉 Your ID: ${myPeerId}. Share it!`); }});  
+            peer.on('connection', incomingConn => { console.log("PEER_CONN_INCOMING: From:", incomingConn.peer); if (conn && conn.open) { console.log("PEER_CONN_INCOMING: Busy. Rejecting new from " + incomingConn.peer); incomingConn.close(); return; } conn = incomingConn; let friendName = (conn.metadata && conn.metadata.name) || `Friend (${conn.peer.slice(-6)})`; setupDataConnectionEvents(conn, friendName);});  
+            peer.on('call', incomingMediaCall => { console.log("PEER_MEDIA_CALL_INCOMING: From", incomingMediaCall.peer); if (currentCall || incomingCallInstance) { console.warn("PEER_MEDIA_CALL_INCOMING: Busy. Rejecting from", incomingMediaCall.peer); incomingMediaCall.close(); return; } incomingCallInstance = incomingMediaCall; const callType = (incomingMediaCall.metadata && incomingMediaCall.metadata.callType) || "unknown"; const caller = (incomingMediaCall.metadata && incomingMediaCall.metadata.callerName) || incomingMediaCall.peer; showIncomingCallPrompt(caller, callType); });
+            peer.on('disconnected', () => { console.warn("PEER_DISCONNECTED."); showError("‼️ Disconnected from PeerJS server."); endCallCleanup(); });  
+            peer.on('close', () => { console.warn("PEER_CLOSE."); showError("🛑 Peer instance closed.", 6000); myPeerId = null; if (peerIdInput && peerIdInput.value === (peer && peer.id)) peerIdInput.value = ''; if(copyIdBtn) copyIdBtn.style.display = 'none'; endCallCleanup(); });  
+            peer.on('error', err => { console.error('PEER_ERROR:', err); let msg = `⚠️ PeerJS Error: ${err.type}`; showError(msg, 7000); endCallCleanup(); });  
+        }
+
+        // ----- Functions called by HTML onclick MUST be global -----
+        window.createNewChat = function() { console.log("UI_ACTION: Create New Chat clicked."); connectToFriendIdAfterInitialize = null; if(peerIdInput) peerIdInput.value = ''; initializePeer(); }
+        window.startChat = function() { const id = peerIdInput ? peerIdInput.value.trim() : null; console.log(`UI_ACTION: Start Chat to: ${id}`); if (!id) { showError('🔗 Enter ID.'); return; } if (conn && conn.open && conn.peer === id) { showError("💬 Already connected."); switchToChatPage(); return; } if (conn && conn.open) { showError("💬 Connected to someone else. Disconnect first."); return; } if (id === myPeerId) { showError('🤔 This is your ID.'); return; } if (!peer || !peer.id) { showError("⏳ Initializing. Try again soon..."); connectToFriendIdAfterInitialize = id; initializePeer(); return; } if (peer.open) { attemptActualConnection(id); } else { showError("⏳ Client preparing. Try again soon..."); connectToFriendIdAfterInitialize = id;}}
         
-        function setupDataConnectionEvents(dataConnection, initialContactName) {
-             /* ... (same, ensure switchToChatPage is called reliably) ... */ 
-            dataConnection.on('open', () => {
-                let name = (dataConnection.metadata && dataConnection.metadata.name) || initialContactName;
-                contactNameSpan.textContent = name; 
-                chatWithNameHeader.innerHTML = `Chatting with: <span id="contact-name">${name}</span>`; // Update header
-                messagesDiv.innerHTML = ''; 
-                switchToChatPage(); 
-                showError(`✅ Connected to ${name}!`, 5000);
-            });
-            // ... (rest of data event handling for text messages)
+        function attemptActualConnection(targetPeerId) {
+            console.log(`CONN_ATTEMPT: To ${targetPeerId}`); if (!peer || !peer.open) { console.warn("CONN_ATTEMPT: Peer not open."); showError("⏳ Client not ready.", 5000); connectToFriendIdAfterInitialize = targetPeerId; if (!peer) initializePeer(); return; }
+            const myNameToShare = friendNameInput ? (friendNameInput.value.trim() || "Anonymous") : "Anonymous";
+            if (conn && conn.open && conn.peer !== targetPeerId) { console.log(`CONN_ATTEMPT: Closing existing DataConn with ${conn.peer}`); conn.close(); }
+            conn = peer.connect(targetPeerId, { metadata: { name: myNameToShare }, reliable: true, serialization: 'binary' }); 
+            console.log(`CONN_ATTEMPT: DataConn object created for ${targetPeerId}.`); 
+            setupDataConnectionEvents(conn, `Friend (${targetPeerId.slice(-6)})`);
         }
         
-        function switchToChatPage() { /* ... (same, should be reliable now) ... */ }
-        function appendMessage(text, isSender, senderDisplayName = "Friend") { /* ... (same) ... */ }
-        function sendMessage() { /* ... (same, text only) ... */ }
+        function setupDataConnectionEvents(dataConnection, initialContactName) {
+            console.log(`SETUP_DATA_CONN_EVENTS: For ${dataConnection.peer}.`);
+            dataConnection.removeAllListeners(); 
+            dataConnection.on('open', () => {
+                console.log(`DATA_CONN_OPEN: With ${dataConnection.peer}.`);
+                let name = (dataConnection.metadata && dataConnection.metadata.name) || initialContactName;
+                if(contactNameSpan) contactNameSpan.textContent = name; 
+                if(chatWithNameHeader) chatWithNameHeader.innerHTML = `Chatting with: <span id="contact-name">${name}</span>`;
+                if(messagesDiv) messagesDiv.innerHTML = ''; 
+                switchToChatPage(); showError(`✅ Connected to ${name}!`, 5000);
+            });
+            dataConnection.on('data', data => { 
+                let logData = data; if (typeof data === 'string' && data.length > 100) logData = `String (len:${data.length}), first: ${data.substring(0,100)}`; console.log(`DATA_RECV: From ${dataConnection.peer}: Type: ${typeof data}`, logData);
+                if (typeof data === 'string') { 
+                    try { const decoded = decodeURIComponent(escape(atob(data))); appendMessage(decoded, false, contactNameSpan ? contactNameSpan.textContent : "Friend"); } 
+                    catch (e) { appendMessage(String(data), false, contactNameSpan ? contactNameSpan.textContent : "Friend"); }
+                } else { console.warn("DATA_RECV: Non-string data on DataConn:", data); }
+            });
+            dataConnection.on('close', () => {  console.warn(`DATA_CONN_CLOSE: With ${dataConnection.peer}.`); showError(`💔 ${(contactNameSpan ? contactNameSpan.textContent : "Friend")} disconnected.`); endCallCleanup(); });
+            dataConnection.on('error', err => { console.error(`DATA_CONN_ERROR: With ${dataConnection.peer}:`, err); showError(`⚠️ Data conn error: ${err.type}`); endCallCleanup(); });
+        }
+        
+        function switchToChatPage() { console.log("SWITCH_TO_CHAT_PAGE: Called."); if (homePageEl && chatPageEl) { homePageEl.style.display = 'none'; chatPageEl.style.display = 'flex'; if(messageInput) messageInput.focus(); console.log("SWITCH_TO_CHAT_PAGE: Switched."); } else { console.error("SWITCH_TO_CHAT_PAGE: Elements NULL!"); }}
+        
+        function appendMessage(text, isSender, senderDisplayName = "Friend") { const el = document.createElement('div'); el.classList.add('message'); let fullText; if (senderDisplayName==="System") { el.classList.add('system'); fullText=text; } else if (isSender) { el.classList.add('sent'); fullText=`You: ${text}`; } else { el.classList.add('received'); fullText=`${senderDisplayName||"Friend"}: ${text}`; } el.textContent=fullText; if(messagesDiv) {messagesDiv.appendChild(el); messagesDiv.scrollTop=messagesDiv.scrollHeight;} else { console.error("APPEND_MESSAGE_FAIL: messagesDiv not found.");} }
+
+        function sendMessage() {
+            const text = messageInput ? messageInput.value.trim() : "";
+            if (!conn || !conn.open) { showError('⚠️ Not connected.'); return; }
+            if (text) {
+                try { const encoded = btoa(unescape(encodeURIComponent(text))); conn.send(encoded); appendMessage(text, true); if(messageInput) {messageInput.value=''; messageInput.focus();} }
+                catch (e) { console.error("SEND_MSG_ERROR:", e); showError("❌ Error sending."); }
+            }
+        }
 
         // ----- MEDIA CALL FUNCTIONS -----
         async function getLocalMedia(constraints) {
             console.log("MEDIA_ACCESS: Requesting with constraints:", constraints);
-            if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
+            if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; console.log("MEDIA_ACCESS: Stopped existing local stream."); }
             try {
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 localStream = stream;
-                localVideoEl.srcObject = stream; 
-                // Mute local audio track by default if video is part of constraints, to avoid immediate feedback to self
-                // if (constraints.video && localStream.getAudioTracks().length > 0) {
-                //    localStream.getAudioTracks()[0].enabled = true; // Keep it enabled for sending
-                // }
-                localVideoEl.style.display = (constraints.video) ? 'block' : 'none'; 
+                if (localVideoEl) localVideoEl.srcObject = stream; 
+                if (localVideoEl) localVideoEl.style.display = (constraints.video) ? 'block' : 'none'; 
                 console.log("MEDIA_ACCESS: Local stream obtained. Video enabled:", !!constraints.video);
-                updateCallControlIcons(); // Update icons based on initial stream state
+                updateCallControlIcons(); 
                 return stream;
             } catch (err) {
                 console.error("MEDIA_ACCESS_ERROR:", err);
@@ -312,15 +312,18 @@
             console.log(`CALL_INITIATE: Attempting ${callType} call with ${conn.peer}`);
             
             const constraints = callType === 'video' ? { video: true, audio: true } : { audio: true, video: false };
+            // Reset media states before getting new stream
+            isMicMuted = false; isVideoOff = !constraints.video; // Video is off if it's an audio call
+
             const stream = await getLocalMedia(constraints);
             if (!stream) { showError(`❌ Could not start ${callType} call: Media access failed.`); return; }
 
-            const friendChatName = contactNameSpan.textContent || conn.peer;
+            const friendChatName = (contactNameSpan ? contactNameSpan.textContent : null) || conn.peer;
             showCallUI(callType, `Calling ${friendChatName}...`); 
             
-            const call = peer.call(conn.peer, stream, { metadata: { callType: callType, callerName: friendNameInput.value.trim() || myPeerId } });
+            const call = peer.call(conn.peer, stream, { metadata: { callType: callType, callerName: (friendNameInput ? friendNameInput.value.trim() : null) || myPeerId } });
             if (call) {
-                setupMediaCallEvents(call, friendChatName); // Pass friend's name
+                setupMediaCallEvents(call, friendChatName); 
                 currentCall = call;
                 console.log(`CALL_INITIATE: MediaCall object created for ${callType} call to ${call.peer}.`);
             } else {
@@ -337,17 +340,21 @@
             promptDiv.id = 'incoming-call-prompt-el';
             promptDiv.className = 'incoming-call-prompt message system';
             promptDiv.innerHTML = `<p>📞 Incoming ${callType} call from ${callerNameToShow}!</p> <button class="accept-call">Accept</button> <button class="reject-call">Reject</button>`;
-            messagesDiv.appendChild(promptDiv); messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if(messagesDiv) {messagesDiv.appendChild(promptDiv); messagesDiv.scrollTop = messagesDiv.scrollHeight;}
 
             promptDiv.querySelector('.accept-call').onclick = async () => {
                 promptDiv.remove();
                 if (!incomingCallInstance) { console.error("INCOMING_CALL_ERROR: No instance to accept."); return; }
                 console.log("INCOMING_CALL_ACCEPT: User accepted from", incomingCallInstance.peer);
-                const constraints = (callType === 'video') ? { video: true, audio: true } : { audio: true, video: false };
+                const remoteMetaCallType = (incomingCallInstance.metadata && incomingCallInstance.metadata.callType) || 'audio'; // Default to audio if not specified
+                const constraints = (remoteMetaCallType === 'video') ? { video: true, audio: true } : { audio: true, video: false };
+                
+                isMicMuted = false; isVideoOff = !constraints.video; // Reset states for new call
+
                 const stream = await getLocalMedia(constraints); 
                 if (!stream) { showError("❌ Could not accept call: Media failed."); incomingCallInstance.close(); incomingCallInstance = null; return; }
                 
-                showCallUI(callType, `In call with ${callerNameToShow}`);
+                showCallUI(remoteMetaCallType, `In call with ${callerNameToShow}`);
                 incomingCallInstance.answer(stream); 
                 setupMediaCallEvents(incomingCallInstance, callerNameToShow);
                 currentCall = incomingCallInstance;
@@ -364,20 +371,27 @@
             mediaCall.removeAllListeners(); 
 
             mediaCall.on('stream', remoteStream => {
-                console.log("MEDIA_CALL_STREAM: Received remote stream from", mediaCall.peer);
-                remoteVideoEl.srcObject = remoteStream;
-                remoteVideoEl.play().catch(e => console.error("Remote video play error:", e)); 
-                remoteVideoEl.style.display = 'block';
-                
-                const callType = mediaCall.metadata && mediaCall.metadata.callType;
-                if (localStream && callType === 'video' && localStream.getVideoTracks().some(t => t.enabled && !t.muted)) {
-                    localVideoEl.style.display = 'block';
-                } else {
-                    localVideoEl.style.display = 'none';
+                console.log("MEDIA_CALL_STREAM: Received remote stream from", mediaCall.peer, remoteStream);
+                if (remoteVideoEl) {
+                    remoteVideoEl.srcObject = remoteStream;
+                    remoteVideoEl.play().catch(e => console.error("Remote video play error:", e)); 
+                    remoteVideoEl.style.display = 'block';
                 }
-                callContactNameEl.textContent = friendNameForDisplay || mediaCall.peer;
-                callStatusEl.textContent = "Connected";
-                videoCallContainer.style.display = 'flex'; 
+                
+                const callType = (mediaCall.metadata && mediaCall.metadata.callType) || 'audio';
+                if (localStream && callType === 'video') {
+                    const videoTrack = localStream.getVideoTracks()[0];
+                    if (localVideoEl && videoTrack && videoTrack.enabled && !videoTrack.muted) { // Ensure localVideoEl exists
+                        localVideoEl.style.display = 'block';
+                    } else if (localVideoEl) {
+                        localVideoEl.style.display = 'none';
+                    }
+                } else if (localVideoEl) {
+                     localVideoEl.style.display = 'none';
+                }
+                if (callContactNameEl) callContactNameEl.textContent = friendNameForDisplay || mediaCall.peer;
+                if (callStatusEl) callStatusEl.textContent = "Connected";
+                if (videoCallContainer) videoCallContainer.style.display = 'flex'; 
             });
             mediaCall.on('close', () => { console.log("MEDIA_CALL_CLOSE: Call with", mediaCall.peer, "closed."); showError(`Call with ${friendNameForDisplay || mediaCall.peer} ended.`); endCallCleanup(); });
             mediaCall.on('error', err => { console.error("MEDIA_CALL_ERROR: With", mediaCall.peer, err); showError(`⚠️ Call error: ${err.message || err.type || 'Unknown error'}`); endCallCleanup(); });
@@ -385,147 +399,108 @@
 
         function showCallUI(callType, statusText = "Connecting...") {
             console.log("UI_UPDATE: Showing call UI for type:", callType, "Status:", statusText);
-            // Update call UI header
-            callContactNameEl.textContent = contactNameSpan.textContent || "Friend"; // Use current chat contact name
-            callStatusEl.textContent = statusText;
-
-            videoCallContainer.style.display = 'flex';
-            messagesDiv.style.display = 'none'; 
-            document.querySelector('.chat-input-area').style.display = 'none'; 
-            toggleVideoBtn.style.display = (callType === 'video') ? 'flex' : 'none'; 
+            if (callContactNameEl) callContactNameEl.textContent = (contactNameSpan ? contactNameSpan.textContent : null) || "Friend";
+            if (callStatusEl) callStatusEl.textContent = statusText;
+            if (videoCallContainer) videoCallContainer.style.display = 'flex';
+            if (messagesDiv) messagesDiv.style.display = 'none'; 
+            const chatInputArea = document.querySelector('.chat-input-area');
+            if (chatInputArea) chatInputArea.style.display = 'none'; 
+            if (toggleVideoBtn) toggleVideoBtn.style.display = (callType === 'video') ? 'flex' : 'none'; 
             
             if (localStream && callType === 'video') {
                 const videoTrack = localStream.getVideoTracks()[0];
-                localVideoEl.style.display = (videoTrack && videoTrack.enabled) ? 'block' : 'none';
-            } else if (callType === 'audio') { 
-                localVideoEl.style.display = 'none'; 
-            }
-            updateCallControlIcons(); // Ensure icons reflect current state
+                if (localVideoEl && videoTrack && videoTrack.enabled) { localVideoEl.style.display = 'block'; } 
+                else if (localVideoEl) { localVideoEl.style.display = 'none'; }
+            } else if (callType === 'audio' && localVideoEl) { localVideoEl.style.display = 'none'; }
+            updateCallControlIcons();
         }
         function hideCallUI() {
             console.log("UI_UPDATE: Hiding call UI.");
-            videoCallContainer.style.display = 'none';
-            messagesDiv.style.display = 'block'; 
-            document.querySelector('.chat-input-area').style.display = 'flex'; 
-            connectionStatusEl.textContent = "🔒 P2P Encrypted"; 
+            if (videoCallContainer) videoCallContainer.style.display = 'none';
+            if (messagesDiv) messagesDiv.style.display = 'block'; 
+            const chatInputArea = document.querySelector('.chat-input-area');
+            if (chatInputArea) chatInputArea.style.display = 'flex'; // It was flex with direction column
+            if (connectionStatusEl) connectionStatusEl.textContent = "🔒 P2P Encrypted"; 
         }
         
         function endCall() {
             console.log("END_CALL: User initiated hang up.");
-            if (currentCall) { 
-                console.log("END_CALL: Closing currentCall object.");
-                currentCall.close(); // This will trigger 'close' event which calls endCallCleanup
-            } else if (incomingCallInstance) { // If trying to hang up a ringing call
-                console.log("END_CALL: Closing incomingCallInstance (rejecting).");
-                incomingCallInstance.close();
-                const existingPrompt = document.getElementById('incoming-call-prompt-el');
-                if (existingPrompt) existingPrompt.remove();
-            }
-            else { 
-                console.log("END_CALL: No active call object, just cleaning up UI.");
-                endCallCleanup(); 
-            } 
+            if (currentCall) { console.log("END_CALL: Closing currentCall object."); currentCall.close(); } 
+            else if (incomingCallInstance) { console.log("END_CALL: Closing incomingCallInstance (rejecting)."); incomingCallInstance.close(); const prompt = document.getElementById('incoming-call-prompt-el'); if (prompt) prompt.remove(); }
+            else { console.log("END_CALL: No active call object, just cleaning up UI."); endCallCleanup(); } 
         }
 
         function endCallCleanup() {
             console.log("END_CALL_CLEANUP: Cleaning up.");
             if (localStream) { localStream.getTracks().forEach(track => track.stop()); console.log("END_CALL_CLEANUP: Local stream tracks stopped."); }
             localStream = null;
-            localVideoEl.srcObject = null; localVideoEl.style.display = 'none';
-            remoteVideoEl.srcObject = null; remoteVideoEl.style.display = 'none';
-            
-            // Reset currentCall only if it's the one being cleaned up.
-            // If another call object exists (e.g. incomingCallInstance was active), don't nullify currentCall yet.
-            if (currentCall && (!incomingCallInstance || currentCall.peer === incomingCallInstance.peer)) {
-                 currentCall = null;
-            }
-            if (incomingCallInstance) incomingCallInstance = null; // Always clear pending incoming call
-
+            if(localVideoEl) { localVideoEl.srcObject = null; localVideoEl.style.display = 'none';}
+            if(remoteVideoEl) { remoteVideoEl.srcObject = null; remoteVideoEl.style.display = 'none';}
+            currentCall = null; incomingCallInstance = null; 
             hideCallUI();
             const existingPrompt = document.getElementById('incoming-call-prompt-el');
             if (existingPrompt) existingPrompt.remove();
-            isMicMuted = false; isVideoOff = false; isSpeakerphoneOn = false; // Reset states
+            isMicMuted = false; isVideoOff = false; isSpeakerphoneOn = false; 
             updateCallControlIcons();
         }
         
         function updateCallControlIcons() {
-            toggleMicBtn.textContent = isMicMuted ? '🔇' : '🎤';
-            toggleMicBtn.classList.toggle('muted', isMicMuted);
-
-            toggleVideoBtn.textContent = isVideoOff ? '📸' : '📹';
-            toggleVideoBtn.classList.toggle('video-off', isVideoOff);
-
-            toggleSpeakerBtn.textContent = isSpeakerphoneOn ? '🔈' : '🔊'; // Speaker off (earpiece) / Speaker on
+            if(toggleMicBtn) { toggleMicBtn.textContent = isMicMuted ? '🔇' : '🎤'; toggleMicBtn.classList.toggle('muted', isMicMuted); }
+            if(toggleVideoBtn) { toggleVideoBtn.textContent = isVideoOff ? '📸' : '📹'; toggleVideoBtn.classList.toggle('video-off', isVideoOff); }
+            if(toggleSpeakerBtn) { toggleSpeakerBtn.textContent = isSpeakerphoneOn ? '🔈' : '🔊'; }
         }
-
 
         function toggleMicrophone() {
             if (!localStream || localStream.getAudioTracks().length === 0) { console.warn("TOGGLE_MIC: No local audio track."); return; }
             const audioTrack = localStream.getAudioTracks()[0];
             audioTrack.enabled = !audioTrack.enabled;
-            isMicMuted = !audioTrack.enabled; // Update state
+            isMicMuted = !audioTrack.enabled; 
             updateCallControlIcons();
             console.log("TOGGLE_MIC:", audioTrack.enabled ? "Unmuted" : "Muted");
-            appendMessage(`You ${audioTrack.enabled ? 'unmuted' : 'muted'} your mic.`, true, "System");
+            appendMessage(`Mic ${audioTrack.enabled ? 'unmuted' : 'muted'}.`, true, "System");
         }
         function toggleCamera() {
-            if (!localStream || localStream.getVideoTracks().length === 0) { console.warn("TOGGLE_VIDEO: No local video track."); toggleVideoBtn.style.display = 'none'; return; }
+            if (!localStream || localStream.getVideoTracks().length === 0) { console.warn("TOGGLE_VIDEO: No local video track."); if(toggleVideoBtn) toggleVideoBtn.style.display = 'none'; return; }
             const videoTrack = localStream.getVideoTracks()[0];
             videoTrack.enabled = !videoTrack.enabled;
-            isVideoOff = !videoTrack.enabled; // Update state
+            isVideoOff = !videoTrack.enabled; 
             updateCallControlIcons();
-            localVideoEl.style.display = videoTrack.enabled ? 'block' : 'none';
+            if (localVideoEl) localVideoEl.style.display = videoTrack.enabled ? 'block' : 'none';
             console.log("TOGGLE_VIDEO:", videoTrack.enabled ? "Video On" : "Video Off");
-            appendMessage(`You turned video ${videoTrack.enabled ? 'on' : 'off'}.`, true, "System");
+            appendMessage(`Video ${videoTrack.enabled ? 'on' : 'off'}.`, true, "System");
         }
         
         async function toggleSpeaker() {
-            if (!remoteVideoEl || !remoteVideoEl.srcObject) { showError("🔊 No active call stream to route."); return; }
-            if (typeof remoteVideoEl.setSinkId !== 'function') { showError("🔊 Speaker toggle not supported by this browser.", 4000); return; }
-
+            if (!remoteVideoEl || !remoteVideoEl.srcObject) { showError("🔊 No active call stream."); return; }
+            if (typeof remoteVideoEl.setSinkId !== 'function') { showError("🔊 Speaker toggle not supported.", 4000); return; }
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
-                const audioOutputDevices = devices.filter(device => device.kind === 'audiooutput');
-                console.log("AUDIO_OUTPUT_DEVICES:", audioOutputDevices.map(d=> ({id: d.deviceId, label:d.label, kind: d.kind })));
-
-                let targetDeviceId = 'default'; // Default to system default (usually earpiece on mobile if not speaker)
-                
-                if (!isSpeakerphoneOn) { // If currently earpiece/default, switch TO speaker
-                    const speakerDevice = audioOutputDevices.find(d => d.deviceId !== 'default' && (d.label.toLowerCase().includes('speaker') || d.deviceId.toLowerCase().includes('speaker')));
-                    if (speakerDevice) {
-                        targetDeviceId = speakerDevice.deviceId;
-                        console.log("SPEAKER_TOGGLE: Found explicit speaker device:", targetDeviceId);
-                    } else if (audioOutputDevices.length > 1) {
-                        // Fallback: try any non-default device, hoping it's the loudspeaker
-                        targetDeviceId = audioOutputDevices.find(d => d.deviceId !== 'default')?.deviceId || audioOutputDevices[1]?.deviceId; // Pick first non-default or second overall
-                        console.log("SPEAKER_TOGGLE: No explicit 'speaker'. Trying fallback deviceId:", targetDeviceId);
-                    } else {
-                        console.warn("SPEAKER_TOGGLE: Only one audio output, or no explicit speaker found to switch to.");
-                        showError("🔊 Could not find a separate speaker device.", 3000);
-                        return; // No actual switch possible if only one device or cannot identify speaker
-                    }
+                const audioOutputDevices = devices.filter(d => d.kind === 'audiooutput');
+                console.log("AUDIO_OUTPUT_DEVICES:", audioOutputDevices.map(d=>({id:d.deviceId, label:d.label})));
+                let targetDeviceId = 'default';
+                if (!isSpeakerphoneOn) { 
+                    const speaker = audioOutputDevices.find(d => d.label.toLowerCase().includes('speaker')) || audioOutputDevices.find(d => d.deviceId !== 'default');
+                    if (speaker) targetDeviceId = speaker.deviceId;
+                    else { console.warn("SPEAKER_TOGGLE: No distinct speaker device found."); showError("🔊 Could not find speaker device."); return;}
                     isSpeakerphoneOn = true;
-                } else { // If currently on speaker, switch back to default (earpiece)
-                    targetDeviceId = 'default'; // Or find explicit earpiece if listed
-                    const earpieceDevice = audioOutputDevices.find(d => d.label.toLowerCase().includes('earpiece'));
-                    if(earpieceDevice) targetDeviceId = earpieceDevice.deviceId;
-                    isSpeakerphoneOn = false;
-                }
+                } else { isSpeakerphoneOn = false; } // Switch back to default (earpiece)
                 
-                console.log(`SPEAKER_TOGGLE: Attempting to setSinkId to: ${targetDeviceId}. Target state speaker on: ${isSpeakerphoneOn}`);
+                console.log(`SPEAKER_TOGGLE: Setting sinkId to: ${targetDeviceId}. Speaker on: ${isSpeakerphoneOn}`);
                 await remoteVideoEl.setSinkId(targetDeviceId);
                 updateCallControlIcons();
-                showError(`🔊 Switched to ${isSpeakerphoneOn ? 'Loudspeaker' : 'Earpiece/Default'}.`, 2000);
-                console.log("SPEAKER_TOGGLE: Switched. New sinkId:", remoteVideoEl.sinkId);
-
-            } catch (err) {
-                console.error("SPEAKER_TOGGLE_ERROR:", err);
-                showError("❌ Error toggling speaker: " + err.message, 4000);
-            }
+                showError(`🔊 Switched to ${isSpeakerphoneOn ? 'Loudspeaker' : 'Earpiece'}.`, 2000);
+            } catch (err) { console.error("SPEAKER_TOGGLE_ERROR:", err); showError("❌ Error toggling speaker.", 4000); }
         }
 
         // ----- Initial UI Setup ----- 
-        function initialUISetup() { peerIdInput.value = ''; copyIdBtn.style.display = 'none'; applySavedTheme(); setupEventListeners(); console.log("UI_INIT: Initial setup complete. Event listeners attached.");}
+        function initialUISetup() { 
+            console.log("UI_INIT: Starting initial setup.");
+            if(peerIdInput) peerIdInput.value = ''; 
+            if(copyIdBtn) copyIdBtn.style.display = 'none'; 
+            applySavedTheme(); 
+            setupEventListeners(); 
+            console.log("UI_INIT: Initial setup complete. Event listeners attached.");
+        }
         document.addEventListener('DOMContentLoaded', initialUISetup);
     </script>
 </body>
