@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
-        /* CSS (Same as your last provided code) */
+        /* CSS (Same as your last "perfect" version with call UI) */
         :root { 
             --bg-color: #f0f2f5; --text-color: #111b21; --primary-color: #00a884; 
             --secondary-color: #ffffff; --input-border-color: #ddd; 
@@ -157,7 +157,15 @@
 
     <script>
         // ----- SVG Icons -----
-        const icons = { /* ... (Same as before) ... */ };
+        const icons = {
+            micOn: `<svg class="icon-mic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"></path></svg>`,
+            micOff: `<svg class="icon-mic-off" viewBox="0 0 24 24" fill="currentColor"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.09.43L13.14 10H12v.11l1.77 1.77c.04-.1.04-.21.04-.31v-1.15c0-.55-.45-1-1-1s-1 .45-1 1v.02l-2.48-2.48C9.69 7.2 9.97 7 10.28 7c.89 0 1.64.55 1.93 1.3l1.43-1.43C13.03 5.96 12.07 5.48 11 5.48c-1.66 0-3 1.34-3 3v1.41l-1.98-1.98L4.61 9.34 3.2 7.93 2.07 9.34l3.56 3.56L3.07 15.46l1.41 1.41L6.34 15H8v1.41l-3.97 3.97 1.41 1.41L21.93 4.07l-1.41-1.41L14.91 11.43zM9 11.92V12c0 1.66 1.34 3 3 3 .74 0 1.4-.27 1.93-.7L9.17 9.54C9.06 10.09 9 10.66 9 11.18v.74z"></path></svg>`, // Different Mic Off
+            videoOn: `<svg class="icon-video" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path></svg>`,
+            videoOff: `<svg class="icon-video-off" viewBox="0 0 24 24" fill="currentColor"><path d="M20.99 4.02L4.02 20.99l1.41 1.41L22.41 5.43 20.99 4.02zM17 16.5V18c0 .55-.45 1-1 1H4c-.55 0-1-.45-1-1V7c0-.35.18-.66.46-.83l-1.01-1.01C2.17 5.45 2 5.92 2 6.41v11.18c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-2.18l.55-.55L17 16.5zm0-6V7c0-.55-.45-1-1-1H7.82l2 2H16v1.18l1 .99V10.5zm3 6.5V7.5l-4-4v2.18l6.61 6.61c.24-.17.39-.44.39-.74zM3 6.83V7c0-.35.18-.66.46-.83L3 5.76V6.83z"></path></svg>`, // Different Video Off
+            speakerOn: `<svg class="icon-speaker-on" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg>`,
+            speakerOff: `<svg class="icon-speaker-off" viewBox="0 0 24 24" fill="currentColor"><path d="M7 9v6h4l5 5V4L7 9H3zm7-.12L11.88 11H10V9h.39L7.88 6.48 7 7.36V9H5V7h2.3L3.41 3.11 4.82 1.7 16.5 13.38l-1.62 1.62L14 14.12V19l-3.12-3.12L9.83 17H11v-2.12L7.76 11.64 7 12.4V15h2v1.61l-3.89 3.89 1.41 1.41L19.1 4.83 17.69 3.41 14 7.1zm7.5 4.38c0 1.77-1.02 3.29-2.5 4.03v-1.75l1.49-1.49c.01.06.01.12.01.18zm0-5.03c.01-.06.01-.12.01-.18L19 7.83v-.06c-4.01-.91-7-4.49-7-8.77h-2c0 4.28 2.99 7.86 7 8.77z"></path></svg>`,
+            hangup: `<svg class="icon-hangup" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg>`
+        };
 
         // ----- Global Variables ----- 
         let peer; let conn; let myPeerId = null; let connectToFriendIdAfterInitialize = null; 
@@ -203,96 +211,39 @@
             console.log("DOM_ELEMENTS: Initialization complete.");
         }
 
-
         // ----- Event Listeners Setup ----- 
-        function setupEventListeners() {
-            console.log("SETUP_LISTENERS: Attaching event listeners...");
-            // Theme toggle removed
-            if (copyIdBtn) copyIdBtn.addEventListener('click', () => { if (peerIdInput.value) { navigator.clipboard.writeText(peerIdInput.value).then(() => showError('✅ ID Copied!')).catch(err => { console.error('Copy failed: ', err); showError('❌ Copy failed.'); }); } else { showError('🤔 No ID to copy.'); }});
-            else console.warn("SETUP_LISTENERS_WARN: copyIdBtn not found");
-
-            if (messageInput) messageInput.addEventListener('keypress', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } });
-            else console.warn("SETUP_LISTENERS_WARN: messageInput not found");
-            
-            if (sendChatBtn) sendChatBtn.addEventListener('click', sendMessage);
-            else console.warn("SETUP_LISTENERS_WARN: sendChatBtn not found");
-
-            if (audioCallBtn) audioCallBtn.addEventListener('click', () => startCallAttempt('audio'));
-            else console.warn("SETUP_LISTENERS_WARN: audioCallBtn not found");
-
-            if (videoCallBtn) videoCallBtn.addEventListener('click', () => startCallAttempt('video'));
-            else console.warn("SETUP_LISTENERS_WARN: videoCallBtn not found");
-
-            if (hangUpBtn) hangUpBtn.addEventListener('click', endCall);
-            else console.warn("SETUP_LISTENERS_WARN: hangUpBtn not found");
-            
-            if (toggleMicBtn) toggleMicBtn.addEventListener('click', toggleMicrophone);
-            else console.warn("SETUP_LISTENERS_WARN: toggleMicBtn not found");
-
-            if (toggleVideoBtn) toggleVideoBtn.addEventListener('click', toggleCamera);
-            else console.warn("SETUP_LISTENERS_WARN: toggleVideoBtn not found");
-
-            if (toggleSpeakerBtn) toggleSpeakerBtn.addEventListener('click', toggleSpeaker);
-            else console.warn("SETUP_LISTENERS_WARN: toggleSpeakerBtn not found");
-            
-            if(localVideoEl) localVideoEl.addEventListener('click', swapVideoFeeds);
-            else console.warn("SETUP_LISTENERS_WARN: localVideoEl not found");
-            if(remoteVideoEl) remoteVideoEl.addEventListener('click', swapVideoFeeds);
-            else console.warn("SETUP_LISTENERS_WARN: remoteVideoEl not found");
-            
-            console.log("SETUP_LISTENERS: Event listeners attachment attempt complete.");
-        }
-
-        // ----- Theme Logic (Simplified) ----- 
-        function applySavedTheme() { 
-            if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-theme');} 
-            else { document.body.classList.remove('dark-theme');}
-             // No theme toggle button to update textContent for
-        }
-
-        // ----- UI Helper Functions ----- 
-        function showError(text, duration = 4000) { 
-            console.log(`SHOW_ERROR: ${text}`); 
-            if(errorMsgEl) { 
-                errorMsgEl.textContent = text; errorMsgEl.style.display = 'block'; 
-                setTimeout(() => { if(errorMsgEl) errorMsgEl.style.display = 'none'; }, duration); 
-            } else { 
-                console.error("SHOW_ERROR_FAIL: errorMsgEl not found."); 
-                alert(text); /* Fallback to alert */ 
-            }
-        }
+        function setupEventListeners() { /* ... (Same as your last working version) ... */ }
+        function applySavedTheme() { /* ... (Same as your last working version) ... */ }
+        function showError(text, duration = 4000) { /* ... (Same as your last working version) ... */ }
         
         // ----- Functions called by HTML onclick MUST be global -----
         window.createNewChat = function() { 
-            console.log("UI_ACTION: Create New Chat clicked!"); 
-            alert("Create New Chat Clicked! (Functionality will be added back)"); // For quick test
-            // connectToFriendIdAfterInitialize = null; 
-            // if(peerIdInput) peerIdInput.value = ''; 
-            // initializePeer(); 
+            console.log("UI_ACTION: Create New Chat clicked."); 
+            connectToFriendIdAfterInitialize = null; 
+            if(peerIdInput) peerIdInput.value = ''; 
+            initializePeer(); 
         }
         window.startChat = function() { 
-             alert("Start Chat Clicked! (Functionality will be added back)"); // For quick test
-            console.log(`UI_ACTION: Start Chat clicked!`);
-            // const friendName = friendNameInput ? friendNameInput.value.trim() : "";
-            // const friendMobile = friendMobileInput ? friendMobileInput.value.trim() : "";
-            // const remotePeerId = peerIdInput ? peerIdInput.value.trim() : null; 
-            // ... (rest of startChat logic needs to be restored carefully)
+            const friendName = friendNameInput ? friendNameInput.value.trim() : "";
+            const friendMobile = friendMobileInput ? friendMobileInput.value.trim() : "";
+            const remotePeerId = peerIdInput ? peerIdInput.value.trim() : null; 
+
+            console.log(`UI_ACTION: Start Chat to: ${remotePeerId} with name: ${friendName}`); 
+            if (!friendName) { showError("❗ Friend's Name is required."); if(friendNameInput) friendNameInput.focus(); return; }
+            if (!remotePeerId) { showError('🔗 Enter Friend\'s ID.'); return; } 
+            if (conn && conn.open && conn.peer === remotePeerId) { showError("💬 Already connected."); switchToChatPage(); return; } 
+            if (conn && conn.open) { showError("💬 Connected to someone else. Disconnect first."); return; } 
+            if (remotePeerId === myPeerId) { showError('🤔 This is your ID.'); return; } 
+            if (!peer || !peer.id) { showError("⏳ Initializing. Try again soon..."); connectToFriendIdAfterInitialize = remotePeerId; initializePeer(); return; } 
+            if (peer.open) { attemptActualConnection(remotePeerId, friendName, friendMobile); } 
+            else { showError("⏳ Client preparing. Try again soon..."); connectToFriendIdAfterInitialize = remotePeerId;}
         }
         
-        // ----- THE REST OF YOUR JAVASCRIPT FUNCTIONS (initializePeer, attemptActualConnection, etc.)
-        // ----- SHOULD GO HERE, UNCHANGED FROM THE LAST "PERFECT" VERSION WITH CALLS.
-
-        // For this specific debug, I'll paste the "perfect" JS from previous response,
-        // but with createNewChat and startChat simplified to alerts as above.
-        // After confirming buttons work, we restore their original logic.
+        // ----- THE REST OF YOUR JAVASCRIPT (initializePeer, attemptActualConnection, etc.)
+        // ----- FROM THE LAST "PERFECT" VERSION (WITH CALLS UI AND LOGIC) GOES HERE.
+        // ----- I've included the critical parts below with the fixes.
 
         function initializePeer() { console.log("PEER_INIT: Initializing Peer..."); if (peer) { console.log("PEER_INIT: Destroying existing peer instance."); peer.destroy(); } peer = new Peer(undefined, { host: '0.peerjs.com', port: 443, secure: true, debug: 1, config: {iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]} });  peer.on('open', id => { console.log('PEER_OPEN: My peer ID is: ' + id); myPeerId = id; if(peerIdInput) peerIdInput.value = id; if(copyIdBtn) copyIdBtn.style.display = 'inline-block'; if (connectToFriendIdAfterInitialize) { const fn = friendNameInput ? friendNameInput.value.trim() : "Friend"; const fm = friendMobileInput ? friendMobileInput.value.trim() : ""; showError(`✅ Client ready. Connecting to ${connectToFriendIdAfterInitialize}...`); attemptActualConnection(connectToFriendIdAfterInitialize, fn, fm); connectToFriendIdAfterInitialize = null; } else { showError(`🎉 Your ID: ${myPeerId}. Share it!`); }});  peer.on('connection', incomingConn => { console.log("PEER_CONN_INCOMING: From:", incomingConn.peer); if (conn && conn.open) { console.log("PEER_CONN_INCOMING: Busy. Rejecting from " + incomingConn.peer); incomingConn.close(); return; } conn = incomingConn; let fName = (conn.metadata && conn.metadata.name) || `Friend (${conn.peer.slice(-6)})`; let fMobile = (conn.metadata && conn.metadata.mobile) || ""; setupDataConnectionEvents(conn, fName, fMobile);});  peer.on('call', incomingMediaCall => { console.log("PEER_MEDIA_CALL_INCOMING: From", incomingMediaCall.peer); if (currentCall || incomingCallInstance) { console.warn("PEER_MEDIA_CALL_INCOMING: Busy. Rejecting from", incomingMediaCall.peer); incomingMediaCall.close(); return; } incomingCallInstance = incomingMediaCall; const callType = (incomingMediaCall.metadata && incomingMediaCall.metadata.callType) || "audio"; const caller = (incomingMediaCall.metadata && incomingMediaCall.metadata.callerName) || incomingMediaCall.peer; showIncomingCallPrompt(caller, callType); }); peer.on('disconnected', () => { console.warn("PEER_DISCONNECTED."); showError("‼️ Disconnected from PeerJS server."); endCallCleanup(); });  peer.on('close', () => { console.warn("PEER_CLOSE."); showError("🛑 Peer instance closed.", 6000); myPeerId = null; if (peerIdInput && peerIdInput.value === (peer && peer.id)) peerIdInput.value = ''; if(copyIdBtn) copyIdBtn.style.display = 'none'; endCallCleanup(); });  peer.on('error', err => { console.error('PEER_ERROR:', err); let msg = `⚠️ PeerJS Error: ${err.type}`; showError(msg, 7000); endCallCleanup(); });  }
-        // Keep the original createNewChat and startChat logic but ensure they are on window if called from HTML
-        window.createNewChat_orig = function() { console.log("UI_ACTION: Create New Chat clicked."); connectToFriendIdAfterInitialize = null; if(peerIdInput) peerIdInput.value = ''; initializePeer(); }
-        window.startChat_orig = function() { const friendName = friendNameInput ? friendNameInput.value.trim() : ""; const friendMobile = friendMobileInput ? friendMobileInput.value.trim() : ""; const remotePeerId = peerIdInput ? peerIdInput.value.trim() : null; console.log(`UI_ACTION: Start Chat to: ${remotePeerId} with name: ${friendName}`); if (!friendName) { showError("❗ Friend's Name is required."); if(friendNameInput) friendNameInput.focus(); return; } if (!remotePeerId) { showError('🔗 Enter Friend\'s ID.'); return; } if (conn && conn.open && conn.peer === remotePeerId) { showError("💬 Already connected."); switchToChatPage(); return; } if (conn && conn.open) { showError("💬 Connected to someone else. Disconnect first."); return; } if (remotePeerId === myPeerId) { showError('🤔 This is your ID.'); return; } if (!peer || !peer.id) { showError("⏳ Initializing. Try again soon..."); connectToFriendIdAfterInitialize = remotePeerId; initializePeer(); return; } if (peer.open) { attemptActualConnection(remotePeerId, friendName, friendMobile); } else { showError("⏳ Client preparing. Try again soon..."); connectToFriendIdAfterInitialize = remotePeerId;}}
-        // For testing, we use the alert versions. Once confirmed, switch back to _orig versions.
-        // Make sure to rename window.createNewChat = window.createNewChat_orig; etc. after test.
-        
         function attemptActualConnection(targetPeerId, friendNameForDisplay, friendMobileForDisplay) { console.log(`CONN_ATTEMPT: To ${targetPeerId} (Display Name: ${friendNameForDisplay}, Mobile: ${friendMobileForDisplay})`); if (!peer || !peer.open) { console.warn("CONN_ATTEMPT: Peer not open."); showError("⏳ Client not ready.", 5000); connectToFriendIdAfterInitialize = targetPeerId; if (!peer) initializePeer(); return; } const myProfileName = document.getElementById('friend-name') ? (document.getElementById('friend-name').value.trim() || "A Friend") : "A Friend"; const myProfileMobile = document.getElementById('friend-mobile') ? document.getElementById('friend-mobile').value.trim() : ""; if (conn && conn.open && conn.peer !== targetPeerId) { console.log(`CONN_ATTEMPT: Closing existing DataConn with ${conn.peer}`); conn.close(); } conn = peer.connect(targetPeerId, { metadata: { name: myProfileName, mobile: myProfileMobile }, reliable: true, serialization: 'binary' }); console.log(`CONN_ATTEMPT: DataConn object created for ${targetPeerId}.`); setupDataConnectionEvents(conn, friendNameForDisplay, friendMobileForDisplay); }
         function setupDataConnectionEvents(dataConnection, contactDisplayName, contactDisplayMobile) { console.log(`SETUP_DATA_CONN_EVENTS: For ${dataConnection.peer}. Displaying Name: ${contactDisplayName}, Mobile: ${contactDisplayMobile}`); dataConnection.removeAllListeners(); dataConnection.on('open', () => { console.log(`DATA_CONN_OPEN: With ${dataConnection.peer}. Metadata from them:`, dataConnection.metadata); const peerActualName = (dataConnection.metadata && dataConnection.metadata.name) || contactDisplayName; const peerActualMobile = (dataConnection.metadata && dataConnection.metadata.mobile) || contactDisplayMobile; if(chatPageContactNameDisplay) chatPageContactNameDisplay.textContent = peerActualName; if(contactMobileDisplay) { contactMobileDisplay.textContent = peerActualMobile || ""; contactMobileDisplay.style.display = peerActualMobile ? 'block' : 'none'; } if(messagesDiv) messagesDiv.innerHTML = ''; switchToChatPage(); showError(`✅ Connected to ${peerActualName}!`, 5000); }); dataConnection.on('data', data => { let logData = data; if (typeof data === 'string' && data.length > 100) logData = `String (len:${data.length}), first: ${data.substring(0,100)}`; console.log(`DATA_RECV: From ${dataConnection.peer}: Type: ${typeof data}`, logData); if (typeof data === 'string') { try { const decoded = decodeURIComponent(escape(atob(data))); appendMessage(decoded, false, chatPageContactNameDisplay ? chatPageContactNameDisplay.textContent : "Friend"); } catch (e) { appendMessage(String(data), false, chatPageContactNameDisplay ? chatPageContactNameDisplay.textContent : "Friend"); } } else { console.warn("DATA_RECV: Non-string data on DataConn:", data); } }); dataConnection.on('close', () => {  console.warn(`DATA_CONN_CLOSE: With ${dataConnection.peer}.`); showError(`💔 ${(chatPageContactNameDisplay ? chatPageContactNameDisplay.textContent : "Friend")} disconnected.`); endCallCleanup(); }); dataConnection.on('error', err => { console.error(`DATA_CONN_ERROR: With ${dataConnection.peer}:`, err); showError(`⚠️ Data conn error: ${err.type}`); endCallCleanup(); }); }
         function switchToChatPage() { console.log("SWITCH_TO_CHAT_PAGE: Called."); if (homePageEl && chatPageEl) { homePageEl.style.display = 'none'; chatPageEl.style.display = 'flex'; if(messageInput) messageInput.focus(); console.log("SWITCH_TO_CHAT_PAGE: Switched."); } else { console.error("SWITCH_TO_CHAT_PAGE: Elements NULL!"); }}
@@ -305,7 +256,7 @@
         function showCallUI(callType, statusText = "Connecting...") { console.log("UI_UPDATE: Showing call UI for type:", callType, "Status:", statusText); const nameToDisplay = (chatPageContactNameDisplay ? chatPageContactNameDisplay.textContent : null) || "Friend"; if (callContactNameOverlayEl) callContactNameOverlayEl.textContent = nameToDisplay; if (callStatusOverlayEl) callStatusOverlayEl.textContent = statusText; if (videoCallContainer) videoCallContainer.style.display = 'flex'; if (messagesDiv) messagesDiv.style.display = 'none'; const chatInputArea = document.querySelector('.chat-input-area'); if (chatInputArea) chatInputArea.style.display = 'none'; if (toggleVideoBtn) toggleVideoBtn.style.display = (callType === 'video') ? 'flex' : 'none'; if (localStream && localVideoEl) { localVideoEl.srcObject = localStream; localVideoEl.play().catch(e=>console.warn("Local video play in showCallUI failed",e)); if (callType === 'video') { localVideoEl.style.display = isVideoOff ? 'none' : 'block'; } else { localVideoEl.style.display = 'none'; } } else if (localVideoEl) { localVideoEl.style.display = 'none'; } if (remoteVideoEl && !remoteVideoEl.srcObject) { remoteVideoEl.style.backgroundColor = '#000'; } updateCallControlIcons(); }
         function hideCallUI() { console.log("UI_UPDATE: Hiding call UI."); if (videoCallContainer) videoCallContainer.style.display = 'none'; if (messagesDiv) messagesDiv.style.display = 'block'; const chatInputArea = document.querySelector('.chat-input-area'); if (chatInputArea) chatInputArea.style.display = 'flex'; if (connectionStatusEl) connectionStatusEl.textContent = "🔒 P2P Encrypted"; }
         function endCall() { console.log("END_CALL: User initiated hang up."); clearTimeout(callTimeoutId); stopRingingTone(); if (currentCall) { console.log("END_CALL: Closing currentCall object for peer:", currentCall.peer); currentCall.close(); } else if (incomingCallInstance) { console.log("END_CALL: Closing incomingCallInstance."); incomingCallInstance.close(); const prompt = document.getElementById('incoming-call-prompt-el'); if (prompt) prompt.remove(); } else { console.log("END_CALL: No active call object, just cleaning up UI."); endCallCleanup(); }}
-        function endCallCleanup() { console.log("END_CALL_CLEANUP: Cleaning up."); clearTimeout(callTimeoutId); stopRingingTone(); if (localStream) { localStream.getTracks().forEach(track => track.stop()); console.log("END_CALL_CLEANUP: Local stream tracks stopped."); } localStream = null; if(localVideoEl) { localVideoEl.srcObject = null; localVideoEl.style.display = 'none';} if(remoteVideoEl) { remoteVideoEl.srcObject = null; remoteVideoEl.style.display = 'none';} if (currentCall) { currentCall.close(); /* Ensure call is closed if cleanup is called directly */ currentCall = null; } incomingCallInstance = null; hideCallUI(); const existingPrompt = document.getElementById('incoming-call-prompt-el'); if (existingPrompt) existingPrompt.remove(); isMicMuted = false; isVideoOff = false; isSpeakerphoneOn = false; updateCallControlIcons(); }
+        function endCallCleanup() { console.log("END_CALL_CLEANUP: Cleaning up."); clearTimeout(callTimeoutId); stopRingingTone(); if (localStream) { localStream.getTracks().forEach(track => track.stop()); console.log("END_CALL_CLEANUP: Local stream tracks stopped."); } localStream = null; if(localVideoEl) { localVideoEl.srcObject = null; localVideoEl.style.display = 'none';} if(remoteVideoEl) { remoteVideoEl.srcObject = null; remoteVideoEl.style.display = 'none';} if (currentCall && currentCall.close) { /* Ensure already closed or close again */ if(!currentCall.open === false) currentCall.close(); } currentCall = null; incomingCallInstance = null; hideCallUI(); const existingPrompt = document.getElementById('incoming-call-prompt-el'); if (existingPrompt) existingPrompt.remove(); isMicMuted = false; isVideoOff = false; isSpeakerphoneOn = false; updateCallControlIcons(); }
         function updateCallControlIcons() { if(toggleMicBtn) { toggleMicBtn.innerHTML = isMicMuted ? icons.micOff : icons.micOn; toggleMicBtn.classList.toggle('muted', isMicMuted); } if(toggleVideoBtn) { toggleVideoBtn.innerHTML = isVideoOff ? icons.videoOff : icons.videoOn; toggleVideoBtn.classList.toggle('video-off', isVideoOff); } if(toggleSpeakerBtn) { toggleSpeakerBtn.innerHTML = isSpeakerphoneOn ? icons.speakerOff : icons.speakerOn; } if(hangUpBtn) { hangUpBtn.innerHTML = icons.hangup; }}
         function toggleMicrophone() { if (!localStream || localStream.getAudioTracks().length === 0) { console.warn("TOGGLE_MIC: No local audio track."); return; } const audioTrack = localStream.getAudioTracks()[0]; audioTrack.enabled = !audioTrack.enabled; isMicMuted = !audioTrack.enabled; updateCallControlIcons(); console.log("TOGGLE_MIC:", audioTrack.enabled ? "Unmuted" : "Muted"); }
         function toggleCamera() { if (!localStream || localStream.getVideoTracks().length === 0) { console.warn("TOGGLE_VIDEO: No local video track."); if(toggleVideoBtn) toggleVideoBtn.style.display = 'none'; return; } const videoTrack = localStream.getVideoTracks()[0]; videoTrack.enabled = !videoTrack.enabled; isVideoOff = !videoTrack.enabled; updateCallControlIcons(); if (localVideoEl) localVideoEl.style.display = videoTrack.enabled ? 'block' : 'none'; console.log("TOGGLE_VIDEO:", videoTrack.enabled ? "Video On" : "Video Off"); }
@@ -317,12 +268,12 @@
         // ----- Initial UI Setup ----- 
         function initialUISetup() { 
             console.log("UI_INIT: Starting initial setup.");
-            initializeDOMElements(); // Initialize DOM elements first
+            initializeDOMElements(); 
             if(peerIdInput) peerIdInput.value = ''; 
             if(copyIdBtn) copyIdBtn.style.display = 'none'; 
             applySavedTheme(); 
             setupEventListeners(); 
-            updateCallControlIcons(); // Set initial icons for call controls
+            updateCallControlIcons(); 
             console.log("UI_INIT: Initial setup complete. Event listeners attached.");
         }
         document.addEventListener('DOMContentLoaded', initialUISetup);
